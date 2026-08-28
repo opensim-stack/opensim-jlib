@@ -17,6 +17,8 @@
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-core.version>3.9.0</maven-core.version>
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
+        <junit-jupiter.version>5.11.0</junit-jupiter.version>
+        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
     </properties>
     <url>https://uk.co.bithatch</url>
     <organization>
@@ -44,6 +46,12 @@
         </developer>
     </developers>
     <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -99,6 +107,10 @@
                         <release>${maven.compiler.release}</release>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -133,6 +145,11 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -151,4 +168,69 @@
             </plugin>
         </plugins>
     </reporting>
+    <profiles>
+        <profile>
+            <id>remoteadmin-it</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>remoteadmin-it-tests</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/*DangerousIT.java</exclude>
+                                    </excludes>
+                                    <systemPropertyVariables>
+                                        <opensim.remoteadmin.endpoint>${opensim.remoteadmin.endpoint}</opensim.remoteadmin.endpoint>
+                                        <opensim.remoteadmin.password>${opensim.remoteadmin.password}</opensim.remoteadmin.password>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>remoteadmin-dangerous-it</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>remoteadmin-dangerous-it-tests</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*DangerousIT.java</include>
+                                    </includes>
+                                    <systemPropertyVariables>
+                                        <opensim.remoteadmin.endpoint>${opensim.remoteadmin.endpoint}</opensim.remoteadmin.endpoint>
+                                        <opensim.remoteadmin.password>${opensim.remoteadmin.password}</opensim.remoteadmin.password>
+                                        <opensim.remoteadmin.allowDangerous>${opensim.remoteadmin.allowDangerous}</opensim.remoteadmin.allowDangerous>
+                                        <opensim.remoteadmin.dangerous.regionId>${opensim.remoteadmin.dangerous.regionId}</opensim.remoteadmin.dangerous.regionId>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -53,6 +53,15 @@ public class OpensimRESTConsole implements AutoCloseable {
 	private volatile String prompt = "";
 	private volatile List<String> discoveredModules = List.of();
 	private Thread receiverThread;
+	
+	public OpensimRESTConsole(String url, String username, String password) {
+		this(url, Optional.ofNullable(username), Optional.ofNullable(password == null ? null : password.toCharArray()),
+				Boolean.parseBoolean(System.getProperty("opensim.debug", "false")), PromptDetectionMode.RELAXED);
+	}
+	public OpensimRESTConsole(String url, String username, char[] password) {
+		this(url, Optional.ofNullable(username), Optional.ofNullable(password),
+				Boolean.parseBoolean(System.getProperty("opensim.debug", "false")), PromptDetectionMode.RELAXED);
+	}
 
 	public OpensimRESTConsole(String url, Optional<String> username, Optional<char[]> password) {
 		this(url, username, password, Boolean.parseBoolean(System.getProperty("opensim.debug", "false")),
@@ -139,6 +148,11 @@ public class OpensimRESTConsole implements AutoCloseable {
 			receiverThread.interrupt();
 			try {
 				receiverThread.join(2000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			try {
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
@@ -1042,7 +1056,7 @@ public class OpensimRESTConsole implements AutoCloseable {
 
 	private void debug(String channel, String message) {
 		if (debugEnabled) {
-			System.err.println("[OpensimRESTConsole][" + channel + "] " + message);
+			System.err.println("[OpensimRESTConsole][" + channel + "] " + message + " (thread=" + Thread.currentThread().getName() + ")");
 		}
 	}
 
