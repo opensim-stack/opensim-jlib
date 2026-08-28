@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.co.bithatch</groupId>
-    <artifactId>get-sdk-maven-plugin</artifactId>
+    <artifactId>opensim-jlib</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>OpenSim JLib</name>
