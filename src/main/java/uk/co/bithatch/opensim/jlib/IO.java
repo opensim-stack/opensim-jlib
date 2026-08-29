@@ -7,7 +7,7 @@ import java.nio.file.Path;
 public class IO {
 
     
-    public void deleteDirectoryQuietly(Path directory) {
+    public static void deleteDirectoryQuietly(Path directory) {
         try (var walk = Files.walk(directory)) {
             walk.sorted(java.util.Comparator.reverseOrder())
                 .forEach(path -> {
