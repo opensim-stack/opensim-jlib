@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+ 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +152,11 @@ class OpensimRemoteAdminClientTest {
 		assertEquals("11111111-2222-3333-4444-555555555555", request.regionId());
 		assertEquals(Boolean.TRUE, request.persist());
 		assertEquals("Regions/MyRegion.ini", request.regionFile());
+
+		var params = request.toParams();
+		assertEquals(true, params.get("persist"));
+		assertEquals(true, params.get("public"));
+		assertEquals(false, params.get("enable_voice"));
 	}
 
 	@Test
