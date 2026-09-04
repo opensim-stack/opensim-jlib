@@ -56,6 +56,19 @@ public class OpensimRemoteAdminClient {
 		this.requestTimeout = requestTimeout == null ? Duration.ofSeconds(75) : requestTimeout;
 		this.debugEnabled = debugEnabled;
 	}
+	
+	public Optional<AgentLocation> findAgent(String name, String uuid, Map<String, String> regions) {
+		for (var regionEn : regions.entrySet()) {
+			var agents = getAgents(null, regionEn.getKey(), false);
+			if (!agents.isEmpty()) {
+				return agents.get(0).agents().stream()
+						.filter(a -> (name == null ? (a.name().equals(name)) : a.uuid().equals(uuid)))
+						.map(a -> new AgentLocation(regionEn.getKey(), regionEn.getValue(), a)).findFirst();
+			}
+		}
+
+		return Optional.empty();
+	}
 
 	public List<Region> getAgents(String regionName, String regionId) {
 		return getAgents(regionName, regionId, false);
@@ -1232,6 +1245,8 @@ public class OpensimRemoteAdminClient {
 	public static SaveXmlBuilder saveXmlById(String regionId, String filename) {
 		return new SaveXmlBuilder(null, regionId, filename);
 	}
+	
+	public record AgentLocation(String regionId, String regionName, Agent agent) {}
 
 	public record CreateRegionResponse(String regionName, String regionUuid) {
 	}
