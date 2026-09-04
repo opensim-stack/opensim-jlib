@@ -59,11 +59,11 @@ public class OpensimRemoteAdminClient {
 	
 	public Optional<AgentLocation> findAgent(String name, String uuid, Map<String, String> regions) {
 		for (var regionEn : regions.entrySet()) {
-			var agents = getAgents(null, regionEn.getKey(), false);
+			var agents = getAgents(null, regionEn.getValue(), false);
 			if (!agents.isEmpty()) {
 				return agents.get(0).agents().stream()
-						.filter(a -> (name == null ? (a.name().equals(name)) : a.uuid().equals(uuid)))
-						.map(a -> new AgentLocation(regionEn.getKey(), regionEn.getValue(), a)).findFirst();
+						.filter(a -> name != null ? name.equals(a.name()) : uuid.equals(a.uuid()))
+						.map(a -> new AgentLocation(regionEn.getValue(), regionEn.getKey(), a)).findFirst();
 			}
 		}
 
