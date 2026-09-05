@@ -154,9 +154,9 @@ class OpensimRemoteAdminClientTest {
 		assertEquals("Regions/MyRegion.ini", request.regionFile());
 
 		var params = request.toParams();
-		assertEquals(true, params.get("persist"));
-		assertEquals(true, params.get("public"));
-		assertEquals(false, params.get("enable_voice"));
+		assertEquals("true", params.get("persist"));
+		assertEquals("true", params.get("public"));
+		assertEquals("false", params.get("enable_voice"));
 	}
 
 	@Test
