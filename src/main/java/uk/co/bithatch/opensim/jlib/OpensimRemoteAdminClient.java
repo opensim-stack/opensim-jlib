@@ -869,7 +869,7 @@ public class OpensimRemoteAdminClient {
 
 	private static Region parseRegion(Map<?, ?> regionMap, String methodName) {
 		var name = getStringField(regionMap, "name", methodName + " region");
-		var uuid = getStringField(regionMap, "uuid", methodName + " region");
+		var uuid = getStringField(regionMap, "id", methodName + " region");
 		var agentsValue = getFieldIgnoreCase(regionMap, "agents").orElse(List.of());
 		var agentItems = objectToItemList(agentsValue);
 		var agents = new ArrayList<Agent>();
