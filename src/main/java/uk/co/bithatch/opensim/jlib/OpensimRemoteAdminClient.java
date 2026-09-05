@@ -883,7 +883,7 @@ public class OpensimRemoteAdminClient {
 	}
 
 	private static Agent parseAgent(Map<?, ?> agentMap) {
-		return new Agent(getOptionalStringField(agentMap, "name"), getOptionalStringField(agentMap, "uuid"),
+		return new Agent(getOptionalStringField(agentMap, "name"), getOptionalStringField(agentMap, "id"),
 				getOptionalStringField(agentMap, "type"), getOptionalStringField(agentMap, "current_parcel_uuid"),
 				getOptionalDoubleField(agentMap, "pos_x"), getOptionalDoubleField(agentMap, "pos_y"),
 				getOptionalDoubleField(agentMap, "pos_z"), getOptionalDoubleField(agentMap, "vel_x"),
