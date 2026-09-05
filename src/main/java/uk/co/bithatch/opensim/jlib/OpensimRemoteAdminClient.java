@@ -1441,14 +1441,14 @@ public class OpensimRemoteAdminClient {
 			putIfPresent(params, "estate_owner_first", estateOwnerFirst);
 			putIfPresent(params, "estate_owner_last", estateOwnerLast);
 			if (persist != null) {
-				params.put("persist", persist);
+				params.put("persist", String.valueOf(persist));
 			}
 			putIfPresent(params, "region_file", regionFile);
 			if (isPublic != null) {
-				params.put("public", isPublic);
+				params.put("public", String.valueOf(isPublic));
 			}
 			if (enableVoice != null) {
-				params.put("enable_voice", enableVoice);
+				params.put("enable_voice", String.valueOf(enableVoice));
 			}
 			putIfPresent(params, "heightmap_file", heightmapFile);
 			return params;
