@@ -1,5 +1,7 @@
 package uk.co.bithatch.opensim.jlib;
 
+import static uk.co.bithatch.opensim.jlib.Strings.parseQuotedString;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -705,7 +707,7 @@ public class OpensimRESTConsole implements AutoCloseable {
 		}
 
 		if (token.startsWith("<") && token.endsWith(">")) {
-			var inner = token.substring(1, token.length() - 1).trim();
+			var inner =  token.substring(1, token.length() - 1).trim();
 			var enumValues = parseEnumValues(inner);
 			if (!enumValues.isEmpty()) {
 				return List.of(new HelpArgument(token, "arg" + argIndex, raw.optional, "positional", List.of(), enumValues,
@@ -896,7 +898,7 @@ public class OpensimRESTConsole implements AutoCloseable {
 		if (value.startsWith("-")) {
 			return value;
 		}
-		return value.replace("<", "").replace(">", "").trim();
+		return value.replace("<", "").replace(">", "").replace(" ", "-").trim();
 	}
 
 	private static String normalizeOptionName(String option) {
@@ -1250,45 +1252,4 @@ public class OpensimRESTConsole implements AutoCloseable {
 		}
 	}
 	
-
-	private static List<String> parseQuotedString(String command) {
-		var args = new ArrayList<String>();
-		var escaped = false;
-		var quoted = false;
-		var word = new StringBuilder();
-		for (int i = 0; i < command.length(); i++) {
-			char c = command.charAt(i);
-			if (escaped) {
-				word.append(c);
-				escaped = false;
-				continue;
-			}
-			if (c == '\\') {
-				escaped = true;
-				continue;
-			}
-			if (c == '"') {
-				quoted = !quoted;
-				continue;
-			}
-			if (Character.isWhitespace(c) && !quoted) {
-				if (word.length() > 0) {
-					args.add(word.toString());
-					word.setLength(0);
-				}
-				continue;
-			}
-			word.append(c);
-		}
-		if (escaped) {
-			throw new IllegalArgumentException("Invalid escape.");
-		}
-		if (quoted) {
-			throw new IllegalArgumentException("Unbalanced quotes.");
-		}
-		if (word.length() > 0) {
-			args.add(word.toString());
-		}
-		return args;
-	}
 }
