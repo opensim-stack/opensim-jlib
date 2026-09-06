@@ -1,10 +1,45 @@
 package uk.co.bithatch.opensim.jlib;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Strings {
 
+	public static String primaryName(String[] names) {
+        if (names == null || names.length == 0) {
+            return null;
+        }
+        for (var rawName : names) {
+            if (rawName == null || rawName.isBlank()) {
+                continue;
+            }
+            return trimLeadingSlash(rawName);
+        }
+        return null;
+    }
+
+    public static String trimLeadingSlash(String name) {
+        if (name == null) {
+            return "";
+        }
+        return name.startsWith("/") ? name.substring(1) : name;
+    }
+
+    public static String normalize(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    public static String normalize(String value, String fallback) {
+        var normalized = normalize(value);
+        return normalized.isBlank() ? fallback : normalized;
+    }
+
+    public static String urlEncode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
+    
 	public static List<String> parseQuotedString(String command) {
 		var args = new ArrayList<String>();
 		var escaped = false;
