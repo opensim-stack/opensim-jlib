@@ -3,9 +3,29 @@ package uk.co.bithatch.opensim.jlib;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Strings {
+	
+	public static String[] mapToEnvVars(Map<String, String> envVars) {
+		return envVars.entrySet().stream()
+				.map(entry -> entry.getKey() + "=" + entry.getValue())
+				.toArray(String[]::new);
+	}
+	
+	public static Map<String, String> envVarsToMap(String[] envVars) {
+		return envVarsToMap(Arrays.asList(envVars));
+	}
+	
+	public static Map<String, String> envVarsToMap(List<String> envVars) {
+        return envVars.stream()
+				.map(s -> s.split("=", 2))
+				.filter(arr -> arr.length == 2)
+				.collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+	}
 
 	public static String primaryName(String[] names) {
         if (names == null || names.length == 0) {
