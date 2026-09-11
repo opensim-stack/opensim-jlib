@@ -51,6 +51,16 @@ public class Strings {
         return value == null ? "" : value.trim();
     }
 
+    public static String firstNonBlank(String... values) {
+        for (var value : values) {
+            var normalized = normalize(value);
+            if (!normalized.isBlank()) {
+                return normalized;
+            }
+        }
+        return "";
+    }
+
     public static String normalize(String value, String fallback) {
         var normalized = normalize(value);
         return normalized.isBlank() ? fallback : normalized;
