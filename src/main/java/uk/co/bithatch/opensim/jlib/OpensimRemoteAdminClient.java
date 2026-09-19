@@ -224,15 +224,39 @@ public class OpensimRemoteAdminClient {
 
 	public void loadOarByName(String regionName, String filename) {
 		var response = callAdminForStruct("load_oar",
-				Map.of("region_name", requireNonBlank(regionName, "regionName"), "filename",
-						requireNonBlank(filename, "filename")));
+			Map.of("region_name", requireNonBlank(regionName, "regionName"),
+					"filename", requireNonBlank(filename, "filename")
+			)
+		);
 		requireTrueField(response, "loaded", "admin_load_oar");
 	}
 
 	public void loadOarById(String regionId, String filename) {
 		var response = callAdminForStruct("load_oar",
-				Map.of("region_id", requireNonBlank(regionId, "regionId"), "filename",
-						requireNonBlank(filename, "filename")));
+				Map.of("region_id", requireNonBlank(regionId, "regionId"), 
+						"filename", requireNonBlank(filename, "filename")));
+		requireTrueField(response, "loaded", "admin_load_oar");
+	}
+
+	public void loadOarByName(String regionName, String filename, boolean merge, boolean skipAssets) {
+		var response = callAdminForStruct("load_oar",
+			Map.of("region_name", requireNonBlank(regionName, "regionName"), 
+					"filename", requireNonBlank(filename, "filename"),
+					"merge", String.valueOf(merge), 
+					"skip_assets", String.valueOf(skipAssets)
+			)
+		);
+		requireTrueField(response, "loaded", "admin_load_oar");
+	}
+
+	public void loadOarById(String regionId, String filename, boolean merge, boolean skipAssets) {
+		var response = callAdminForStruct("load_oar",
+			Map.of("region_id", requireNonBlank(regionId, "regionId"), 
+					"filename", requireNonBlank(filename, "filename"),
+					"merge", String.valueOf(merge), 
+					"skip_assets", String.valueOf(skipAssets)
+			)
+		);
 		requireTrueField(response, "loaded", "admin_load_oar");
 	}
 
