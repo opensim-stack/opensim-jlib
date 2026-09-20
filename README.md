@@ -1,10 +1,26 @@
 # opensim-jlib
 
+[![Maven Build and Publish](https://github.com/opensim-stack/opensim-jlib/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/opensim-stack/opensim-jlib/actions/workflows/maven-publish.yml)
+
 A library used by other OpenSim AI Stack components. 
 
 **For Issues And Discussions see main project [opensim-ai-docker](https://github.com/opensim-stack/opensim-ai-docker)**
 
 *This is part of the [opensim-stack](https://opensim-stack.github.io/) and is intended to be used in conjunction with other parts of the stack. See [Docs](https://opensim-stack.github.io/docs/index.html) for full details.*
+
+## CI/CD (GitHub Actions)
+
+This repository uses `.github/workflows/maven-publish.yml` for build/test on push/PR and deploy on `v*` tags (or manual workflow dispatch).
+
+Required repository secrets for deploy:
+
+- `MAVEN_USERNAME`
+- `MAVEN_TOKEN`
+
+Optional signing secrets (recommended for Maven Central publication):
+
+- `GPG_PRIVATE_KEY`
+- `GPG_PASSPHRASE`
 
 ## RemoteAdmin XML-RPC client
 
