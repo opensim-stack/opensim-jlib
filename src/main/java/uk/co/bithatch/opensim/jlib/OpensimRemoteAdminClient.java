@@ -35,6 +35,8 @@ import org.xml.sax.InputSource;
  */
 public class OpensimRemoteAdminClient {
 
+	private static final int DEFAULT_TIMEOUT = 1800;
+
 	private static final String METHOD_PREFIX = "admin_";
 
 	private final URI endpoint;
@@ -45,7 +47,7 @@ public class OpensimRemoteAdminClient {
 
 	public OpensimRemoteAdminClient(String endpoint, String password) {
 		this(endpoint, password, HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build(),
-				Duration.ofSeconds(75), Boolean.parseBoolean(System.getProperty("opensim.debug", "false")));
+				Duration.ofSeconds(DEFAULT_TIMEOUT), Boolean.parseBoolean(System.getProperty("opensim.debug", "false")));
 	}
 
 	public OpensimRemoteAdminClient(String endpoint, String password, HttpClient httpClient, Duration requestTimeout,
@@ -53,7 +55,7 @@ public class OpensimRemoteAdminClient {
 		this.endpoint = URI.create(Objects.requireNonNull(endpoint, "endpoint must not be null"));
 		this.password = Objects.requireNonNull(password, "password must not be null");
 		this.httpClient = Objects.requireNonNull(httpClient, "httpClient must not be null");
-		this.requestTimeout = requestTimeout == null ? Duration.ofSeconds(75) : requestTimeout;
+		this.requestTimeout = requestTimeout == null ? Duration.ofSeconds(1800) : requestTimeout;
 		this.debugEnabled = debugEnabled;
 	}
 	
