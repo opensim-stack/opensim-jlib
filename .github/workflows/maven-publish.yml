@@ -92,4 +92,4 @@ jobs:
           if [ -n "${GPG_PRIVATE_KEY}" ]; then
             GPG_FLAGS=""
           fi
-          mvn --batch-mode --no-transfer-progress deploy -DskipTests ${GPG_FLAGS}
+          mvn --batch-mode deploy -DskipTests ${GPG_FLAGS}

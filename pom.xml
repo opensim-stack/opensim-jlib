@@ -60,7 +60,7 @@
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <configuration>
                     <autoPublish>true</autoPublish>
-                    <waitForPublishCompletion>true</waitForPublishCompletion>
+                    <waitUntil>published</waitUntil>
                     <publishingServerId>ossrh-bithatch</publishingServerId>
                 </configuration>
             </plugin>
