@@ -3,6 +3,7 @@ package uk.co.bithatch.opensim.jlib;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -24,6 +25,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -435,6 +438,35 @@ public class OpensimRemoteAdminClient {
 		return requireStringField(response, "avatar_uuid", "admin_update_user");
 	}
 
+	public Map<String, Object> setUserAccountFields(String principalId, Map<String, ?> fields) {
+		var payload = new LinkedHashMap<String, Object>();
+		payload.put("METHOD", "setaccount");
+		payload.put("PrincipalID", requireNonBlank(principalId, "principalId"));
+		if (fields != null) {
+			for (var entry : fields.entrySet()) {
+				var key = entry.getKey();
+				var value = entry.getValue();
+				if (key == null || key.isBlank() || value == null) {
+					continue;
+				}
+				payload.put(key, value);
+			}
+		}
+		var response = callAccounts(payload);
+		if (response.get("result") instanceof Map<?, ?> result) {
+			var typed = new LinkedHashMap<String, Object>();
+			for (var entry : result.entrySet()) {
+				typed.put(String.valueOf(entry.getKey()), entry.getValue());
+			}
+			return typed;
+		}
+		throw new IllegalStateException("Unexpected /accounts setaccount response: " + response);
+	}
+
+	public Map<String, Object> setUserFlags(String principalId, int userFlags) {
+		return setUserAccountFields(principalId, Map.of("UserFlags", userFlags));
+	}
+
 	public String authenticateUser(String userFirstName, String userLastName, char[] userPassword,
 			int tokenLifetimeSeconds) {
 		if (tokenLifetimeSeconds < 1 || tokenLifetimeSeconds > 30) {
@@ -504,6 +536,74 @@ public class OpensimRemoteAdminClient {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException("XML-RPC call interrupted.", e);
 		}
+	}
+
+	private Map<String, Object> callAccounts(Map<String, ?> formData) {
+		var encoded = buildFormBody(formData == null ? Map.of() : formData);
+		var request = HttpRequest.newBuilder(endpoint.resolve("/accounts"))
+				.timeout(requestTimeout)
+				.header("Content-Type", "application/x-www-form-urlencoded")
+				.POST(HttpRequest.BodyPublishers.ofString(encoded, StandardCharsets.UTF_8))
+				.build();
+		try {
+			var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+			if (response.statusCode() < 200 || response.statusCode() > 299) {
+				throw new IllegalStateException("HTTP " + response.statusCode() + " from " + endpoint.resolve("/accounts"));
+			}
+			return parseServerResponse(response.body());
+		} catch (IOException e) {
+			throw new IllegalStateException("/accounts call failed: " + e.getMessage(), e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException("/accounts call interrupted.", e);
+		}
+	}
+
+	private static String buildFormBody(Map<String, ?> formData) {
+		var sb = new StringBuilder();
+		for (var entry : formData.entrySet()) {
+			if (entry.getKey() == null || entry.getKey().isBlank() || entry.getValue() == null) {
+				continue;
+			}
+			if (sb.length() > 0) {
+				sb.append('&');
+			}
+			sb.append(urlEncode(entry.getKey()));
+			sb.append('=');
+			sb.append(urlEncode(String.valueOf(entry.getValue())));
+		}
+		return sb.toString();
+	}
+
+	private static String urlEncode(String value) {
+		return URLEncoder.encode(value, StandardCharsets.UTF_8);
+	}
+
+	private static Map<String, Object> parseServerResponse(String xml) {
+		var document = parseXml(xml);
+		var roots = document.getElementsByTagName("ServerResponse");
+		if (roots.getLength() == 0 || !(roots.item(0) instanceof Element root)) {
+			throw new IllegalStateException("Invalid /accounts response: <ServerResponse> not found.");
+		}
+		return parseServerResponseElement(root);
+	}
+
+	private static Map<String, Object> parseServerResponseElement(Element element) {
+		var result = new LinkedHashMap<String, Object>();
+		NodeList children = element.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			Node node = children.item(i);
+			if (!(node instanceof Element child)) {
+				continue;
+			}
+			var key = child.getTagName();
+			if ("List".equalsIgnoreCase(child.getAttribute("type"))) {
+				result.put(key, parseServerResponseElement(child));
+			} else {
+				result.put(key, child.getTextContent() == null ? "" : child.getTextContent());
+			}
+		}
+		return result;
 	}
 
 	private static String buildMethodCall(String methodName, Map<String, ?> parameters) {
